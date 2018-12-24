@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    path {
+      stroke: #fff;
+      fill-rule: evenodd;
+    }
+
+    text {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      pointer-events: none;  /* Make text "non selectable" */
+    }
+
+    .filters {
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    div.tooltip {
+      padding: 5px;
+      position: absolute;
+      text-align: center;
+      min-width: 100px;
+      min-height: 30px;
+      font: 14px sans-serif;
+      /* background: rgb(185, 216, 255); */
+      background: #fff;
+      box-shadow: 1px 2px 6px 1px rgba(48,48,48,1);
+      border: 0px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  </style>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Sunburst</title>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+    </script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+
+  <!-- Include the Tableau Extensions library so we can communicate with Tableau -->
+  <script src="./lib/tableau-extensions-0.latest.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+
+  <!-- Include our own style sheets and javascript code -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="./Sunburst.js"></script>
+</head>
+
+<body>
+</body>
+
+</html>
