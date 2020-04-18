@@ -17,29 +17,31 @@
       let unregisterHandlerFunction = worksheet.addEventListener(tableau.TableauEventType.FilterChanged, filterChangedHandler);
       var result;
       function filterChangedHandler(event) {
-        // for company filter
-        // TODO: Add fieldName with or (||) for other filters
-        if (event.fieldName === "Company" || event.fieldName === "GL Theme") {
+        // for filter change
+        // Add fieldName with (||) for other filters
+        if (event.fieldName === "Segment Name") {
           // reload summary data
           let dataArr = [];
           worksheet.getSummaryDataAsync().then(data => {
             let dataJson;
             data.data.map(d => {
               dataJson = {};
-              dataJson[data.columns[0].fieldName] = d[0].value;
-              dataJson[data.columns[1].fieldName] = d[1].value;
-              dataJson[data.columns[2].fieldName] = d[2].value;
-              dataJson[data.columns[3].fieldName] = d[3].value;
+              dataJson[data.columns[0].fieldName] = d[0].value; //1st column 
+              dataJson[data.columns[1].fieldName] = d[1].value; //2nd column 
+              dataJson[data.columns[2].fieldName] = d[2].value; //3rd column 
+              dataJson[data.columns[3].fieldName] = d[3].value; //4th column 
               dataArr.push(dataJson);
             });
+
+            // converting data to heirarchical json
             result = _(dataArr)
-              .groupBy(x => x.Company)
+              .groupBy(x => x["Segment Name"])
               .map((value1, key) => ({
                 name: key, count: sum(value1), children: _(value1)
-                  .groupBy(x => x["HL Themes"])
+                  .groupBy(x => x["Family Name"])
                   .map((value2, key) => ({
                     name: key, count: sum(value2), children: _(value2)
-                      .groupBy(x => x["GL Theme"])
+                      .groupBy(x => x["Class Name"])
                       .map((value3, key) => ({ name: key, count: sum(value3), children: [] }))
                       .value()
                   }))
@@ -58,24 +60,26 @@
       let dataArr = [];
       worksheet.getSummaryDataAsync().then(data => {
         let dataJson;
+        console.log(data);
+
         data.data.map(d => {
           dataJson = {};
-          dataJson[data.columns[0].fieldName] = d[0].value;
-          dataJson[data.columns[1].fieldName] = d[1].value;
-          dataJson[data.columns[2].fieldName] = d[2].value;
-          dataJson[data.columns[3].fieldName] = d[3].value;
+          dataJson[data.columns[0].fieldName] = d[0].value; //1st column 
+          dataJson[data.columns[1].fieldName] = d[1].value; //2nd column 
+          dataJson[data.columns[2].fieldName] = d[2].value; //3rd column 
+          dataJson[data.columns[3].fieldName] = d[3].value; //4th column 
           dataArr.push(dataJson);
         });
 
-        // change data into heirarchical format
+        // converting data to heirarchical json
         result = _(dataArr)
-          .groupBy(x => x.Company)
+          .groupBy(x => x["Segment Name"])
           .map((value1, key) => ({
             name: key, count: sum(value1), children: _(value1)
-              .groupBy(x => x["HL Themes"])
+              .groupBy(x => x["Family Name"])
               .map((value2, key) => ({
                 name: key, count: sum(value2), children: _(value2)
-                  .groupBy(x => x["GL Theme"])
+                  .groupBy(x => x["Class Name"])
                   .map((value3, key) => ({ name: key, count: sum(value3), children: [] }))
                   .value()
               }))
@@ -173,29 +177,29 @@
         })
 
       function click(d) {
-        // apply filters fromnd3 chart to worksheet2 to populate respective comments
-        let company = "Company", hlThemes = "HL Themes", glThemes = "GL Theme";
+        // apply filters from d3 chart to worksheet2 to populate respective data
+        let segment = "Segment Name", family = "Family Name", className = "Class Name";
         switch (d.depth) {
           case 0: {
-            worksheet2.clearFilterAsync(hlThemes).then(
-              worksheet2.clearFilterAsync(glThemes).then(
-                worksheet2.applyFilterAsync(company, [d.name], tableau.FilterUpdateType.Replace)
+            worksheet2.clearFilterAsync(family).then(
+              worksheet2.clearFilterAsync(className).then(
+                worksheet2.applyFilterAsync(segment, [d.name], tableau.FilterUpdateType.Replace)
               )
             )
             break;
           }
           case 1: {
-            worksheet2.clearFilterAsync(glThemes).then(
-              worksheet2.applyFilterAsync(company, [d.parent.name], tableau.FilterUpdateType.Replace).then(
-                worksheet2.applyFilterAsync(hlThemes, [d.name], tableau.FilterUpdateType.Replace)
+            worksheet2.clearFilterAsync(className).then(
+              worksheet2.applyFilterAsync(segment, [d.parent.name], tableau.FilterUpdateType.Replace).then(
+                worksheet2.applyFilterAsync(family, [d.name], tableau.FilterUpdateType.Replace)
               )
             )
             break;
           }
           case 2: {
-            worksheet2.applyFilterAsync(company, [d.parent.parent.name], tableau.FilterUpdateType.Replace).then(
-              worksheet2.applyFilterAsync(hlThemes, [d.parent.name], tableau.FilterUpdateType.Replace).then(
-                worksheet2.applyFilterAsync(glThemes, [d.name], tableau.FilterUpdateType.Replace)
+            worksheet2.applyFilterAsync(segment, [d.parent.parent.name], tableau.FilterUpdateType.Replace).then(
+              worksheet2.applyFilterAsync(family, [d.parent.name], tableau.FilterUpdateType.Replace).then(
+                worksheet2.applyFilterAsync(className, [d.name], tableau.FilterUpdateType.Replace)
               )
             )
             break;
@@ -219,7 +223,7 @@
               arcText.transition().duration(750)
                 .attr("opacity", 1)
                 .text(d => {
-                  return (endAngle - startAngle) >  0.080 ? `${d.name.substring(0, 10)}...` : "...";
+                  return (endAngle - startAngle) > 0.080 ? `${d.name.substring(0, 10)}...` : "...";
                 })
                 .attr("transform", function () {
                   return "translate(" + arc.centroid(e) + ")rotate(" + computeTextRotation(e) + ")";
